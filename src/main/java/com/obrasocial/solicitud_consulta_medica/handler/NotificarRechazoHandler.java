@@ -13,6 +13,9 @@ import io.camunda.zeebe.spring.client.annotation.JobWorker;
 import io.camunda.zeebe.spring.client.annotation.Variable;
 
 @Component
+/**
+ * Worker para notificar a un socio que su solicitud ha sido rechazada (no es apto)
+ */
 public class NotificarRechazoHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(NotificarRechazoHandler.class);
@@ -28,7 +31,7 @@ public class NotificarRechazoHandler {
         try {
             logger.info("📨 Notificando rechazo al socio: {} con email: {}", num_socio, email);
 
-            // Simulación de email inválido general
+            // Verificación de email  
             if (email == null || !email.contains("@")) {
                 logger.warn("❗ Email inválido: {}", email);
                 client.newThrowErrorCommand(job)
@@ -39,7 +42,8 @@ public class NotificarRechazoHandler {
                 return;
             }
 
-            // === Errores técnicos simulados ===
+            // === ERRORES TÉCNICOS SIMULADOS ===
+            
             if ("121".equals(num_socio)) throw new InterruptedException("Error API notificación");
             if ("122".equals(num_socio)) throw new InterruptedException("SMTP caído");
 

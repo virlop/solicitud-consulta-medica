@@ -13,6 +13,9 @@ import io.camunda.zeebe.spring.client.annotation.JobWorker;
 import io.camunda.zeebe.spring.client.annotation.Variable;
 
 @Component
+/**
+ * Worker para notificar a un socio que no tiene turno asignado.
+ */
 public class NotificarSinTurnoHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(NotificarSinTurnoHandler.class);
@@ -39,7 +42,7 @@ public class NotificarSinTurnoHandler {
                 return;
             }
 
-            // Errores técnicos simulados
+            // === ERRORES TÉCNICOS SIMULADOS ===
             if ("121".equals(num_socio)) throw new InterruptedException("Error API notificación");
             if ("122".equals(num_socio)) throw new InterruptedException("SMTP caído");
 

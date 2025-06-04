@@ -15,7 +15,6 @@ import io.camunda.zeebe.spring.client.annotation.Variable;
 
 /**
  * Worker para revisar la disponibilidad de turnos en la agenda médica.
- * Aplica reglas de negocio según especialidad, motivo y número de socio.
  */
 @Component
 public class ConsultarTurnosHandler {

@@ -14,6 +14,9 @@ import io.camunda.zeebe.spring.client.annotation.JobWorker;
 import io.camunda.zeebe.spring.client.annotation.Variable;
 
 @Component
+/**
+ * Worker para registrar un turno médico para un socio.
+ */
 public class RegistrarTurnoHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(RegistrarTurnoHandler.class);
@@ -30,6 +33,7 @@ public class RegistrarTurnoHandler {
             LocalDate fecha = LocalDate.parse(fechaTurno);
             logger.info("📆 Registrando turno para socio: {} en fecha: {}", num_socio, fecha);
 
+            // Turno duplicado para un socio
             if ("990".equals(num_socio)) {
                 logger.warn("⚠️ Turno duplicado detectado para socio {}", num_socio);
                 client.newThrowErrorCommand(job)
@@ -40,6 +44,7 @@ public class RegistrarTurnoHandler {
                 return;
             }
 
+            // Fecha inválida para un turno específico
             if (fecha.getYear() > 2025) {
                 logger.warn("⚠️ Fecha inválida detectada: {}", fecha);
                 client.newThrowErrorCommand(job)
@@ -50,6 +55,8 @@ public class RegistrarTurnoHandler {
                 return;
             }
 
+            // === ERRORES TÉCNICOS SIMULADOS ===
+            
             if ("118".equals(num_socio)) throw new InterruptedException("Connection time out");
             if ("119".equals(num_socio)) throw new InterruptedException("Error DB");
 

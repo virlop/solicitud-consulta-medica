@@ -6,8 +6,9 @@ import java.util.Map;
 public class FakeRandomizer {
 
     private static final List<Map<String, Object>> testCases = List.of(
-        // Casos de prueba para la verificación de cobertura médica
-        // ✅ Caso exitoso: apto OK, turno disponible OK
+        // CASOS DE PRUEBA PARA EL FUNCIONAMIENTO DEL MODELO
+
+        // ✅ Caso exitoso: apto OK, turno disponible OK, Turno para --> NEUROLOGÍA, MOTIVO 'DOLOR'
         Map.of(
             "num_socio", "123456",
             "especialidad", "Neurología",
@@ -15,7 +16,7 @@ public class FakeRandomizer {
             "email", "1casoexitoso@correo.com",
             "fechaTurno", "2025-06-01"
         ),
-        
+
         // ❌ Socio NO REGISTRADO num_socio = "999" --> (apto = false)
         Map.of(
             "num_socio", "999",
@@ -32,7 +33,7 @@ public class FakeRandomizer {
             "email", "3sociocondeuda@correo.com",
             "fechaTurno", "2025-06-01"
         ),
-        // ❌ Sin turno disponible (turnoDisponible = false)
+        // ❌ Sin turno disponible (turnoDisponible = false), TURNO PARA --> DERMATOLOGÍA, MOTIVO 'LUNALES'
         Map.of(
             "num_socio", "123456",
             "especialidad", "Dermatología",
@@ -40,7 +41,7 @@ public class FakeRandomizer {
             "email", "4sinturnopordermatologia@correo.com",
             "fechaTurno", "2025-06-01"
         ),
-        // ❌ Email inválido para notificar socio no apto (socio no apto, falla notificación)
+        // ❌ Email inválido para notificar socio no apto (socio no apto, falla notificación) --> No tiene 'arroba'
         Map.of(
             "num_socio", "999",
             "apto", false,
@@ -50,7 +51,7 @@ public class FakeRandomizer {
             "fechaTurno", "2025-06-01"
         ),
 
-        // ❌ Email inválido para notificar sin turno disponible (socio apto, NO turno disponible, falla notificación)
+        // ❌ Email inválido para notificar sin turno disponible (socio apto, NO turno disponible, falla notificación), TURNO PARA --> DERMATOLOGÍA, MOTIVO 'LUNALES'
         Map.of(
             "num_socio", "34659",
             "especialidad", "Dermatología",
@@ -59,7 +60,7 @@ public class FakeRandomizer {
             "fechaTurno", "2025-06-01"
         ),
 
-        // ❌ Turno duplicado (turno ya asignado)
+        // ❌ Turno duplicado (turno ya asignado), num_socio = "990"
         Map.of(
             "num_socio", "990",
             "especialidad", "Neurología",
@@ -68,7 +69,7 @@ public class FakeRandomizer {
             "fechaTurno", "2025-06-01"
         ),
 
-        // ❌ Fecha de turno inválida
+        // ❌ Fecha de turno inválida, fechaTurno = "2035-06-15" (no existe suponiendo que estamos en el año 2025)
         Map.of(
             "num_socio", "889",
             "especialidad", "Cardiología",

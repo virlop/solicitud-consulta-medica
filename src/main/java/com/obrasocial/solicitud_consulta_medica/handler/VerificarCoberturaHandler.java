@@ -13,7 +13,7 @@ import io.camunda.zeebe.spring.client.annotation.JobWorker;
 import io.camunda.zeebe.spring.client.annotation.Variable;
 
 /**
- * Worker que verifica la cobertura médica de un paciente/socio.
+ * Worker que verifica la cobertura médica de un paciente/socio (num_socio).
  */
 @Component
 public class VerificarCoberturaHandler {
@@ -29,7 +29,7 @@ public class VerificarCoberturaHandler {
         try {
             logger.info("📋 Iniciando verificación de cobertura para socio: {}", num_socio);
 
-            // Por defecto asumimos que el socio está apto
+            // POR DEFECTO ASUMO QUE EL SOCIO ESTA APTO
             boolean apto = true;
 
             // === REGLAS DE NEGOCIO ===
