@@ -6,7 +6,7 @@ import java.util.Map;
 public class FakeRandomizer {
 
     private static final List<Map<String, Object>> testCases = List.of(
-        // CASOS DE PRUEBA PARA EL FUNCIONAMIENTO DEL MODELO
+        // CASOS DE PRUEBA PARA EL FUNCIONAMIENTO DEL MODELO, (archivo test)
 
         // ✅ Caso exitoso: apto OK, turno disponible OK, Turno para --> NEUROLOGÍA, MOTIVO 'DOLOR'
         Map.of(
