@@ -23,41 +23,35 @@ public class RegistrarTurnoHandler {
             final JobClient client,
             final ActivatedJob job,
             @Variable String num_socio,
-            @Variable String fechaTurno // <-- NOTA: ahora es String
+            @Variable(name = "fechaTurno") String fechaTurno
     ) throws InterruptedException {
 
         try {
-            logger.info("📆 Registrando turno para socio: {} en fecha: {}", num_socio, fechaTurno);
-
-            // === Validaciones de negocio ===
+            LocalDate fecha = LocalDate.parse(fechaTurno);
+            logger.info("📆 Registrando turno para socio: {} en fecha: {}", num_socio, fecha);
 
             if ("990".equals(num_socio)) {
                 logger.warn("⚠️ Turno duplicado detectado para socio {}", num_socio);
                 client.newThrowErrorCommand(job)
                         .errorCode("turnoDuplicado")
-                        .errorMessage("El socio ya tiene un turno registrado.")
+                        .errorMessage("El socio ya tiene un turno asignado")
                         .send()
                         .join();
                 return;
             }
-
-            LocalDate fecha = LocalDate.parse(fechaTurno); // <-- Se convierte manualmente
 
             if (fecha.getYear() > 2025) {
                 logger.warn("⚠️ Fecha inválida detectada: {}", fecha);
                 client.newThrowErrorCommand(job)
                         .errorCode("fechaInvalida")
-                        .errorMessage("La fecha del turno supera el año permitido.")
+                        .errorMessage("La fecha del turno es inválida (año mayor a 2025)")
                         .send()
                         .join();
                 return;
             }
 
-            // === Simulación de errores técnicos ===
             if ("118".equals(num_socio)) throw new InterruptedException("Connection time out");
             if ("119".equals(num_socio)) throw new InterruptedException("Error DB");
-
-            // === Turno confirmado exitosamente ===
 
             Map<String, Object> variables = new HashMap<>();
             variables.put("mensaje", "Turno confirmado exitosamente.");
