@@ -18,7 +18,7 @@ public class SolicitudConsultaMedicaApplication implements CommandLineRunner {
 
     // ⚠️ Este es el ID del proceso definido en tu modelo BPMN
     private static final String PROCESS_ID = "Process_SolicitudConsultaMedica";
-    private static final int NUM_INSTANCES = 1;
+    private static final int NUM_INSTANCES = 8; //CAMBIO EN NUMERO DE INSTANCIAS PARA EJECUTAR VARIAS PARA PROBAR TODOS LOS CAMINOS
 
     @Autowired
     private ZeebeClient zeebeClient;

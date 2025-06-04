@@ -13,22 +13,13 @@ import io.camunda.zeebe.spring.client.annotation.JobWorker;
 import io.camunda.zeebe.spring.client.annotation.Variable;
 
 /**
- * Manejador para la verificación de cobertura médica de pacientes.
- * Este worker se encarga de validar si un socio tiene cobertura activa
- * según las reglas de negocio definidas.
+ * Worker que verifica la cobertura médica de un paciente/socio.
  */
 @Component
 public class VerificarCoberturaHandler {
+
     private static final Logger logger = LoggerFactory.getLogger(VerificarCoberturaHandler.class);
 
-    /**
-     * Worker que verifica la cobertura médica de un paciente/socio.
-     *
-     * @param client Cliente de Camunda para interacción con el motor de flujo
-     * @param job Representación del trabajo activado en Camunda
-     * @param num_socio Número de socio a verificar (inyectado como variable del proceso)
-     * @throws InterruptedException Si ocurre un error técnico durante el procesamiento
-     */
     @JobWorker(type = "verificarCobertura")
     public void handleVerificarCoberturaPaciente(
             final JobClient client,
@@ -36,42 +27,40 @@ public class VerificarCoberturaHandler {
             @Variable String num_socio) throws InterruptedException {
 
         try {
-            logger.info("Iniciando verificación de cobertura para socio: {}", num_socio);
+            logger.info("📋 Iniciando verificación de cobertura para socio: {}", num_socio);
 
+            // Por defecto asumimos que el socio está apto
             boolean apto = true;
 
-            // ========= REGLAS DE NEGOCIO =========
+            // === REGLAS DE NEGOCIO ===
 
+            // Socio no registrado
             if ("999".equals(num_socio)) {
                 apto = false;
-                logger.warn("Socio no registrado - Número: {}", num_socio);
+                logger.warn("❌ Socio no registrado - Número: {}", num_socio);
             }
 
-            if ("998".equals(num_socio)) {
+            // Socio con deudas pendientes
+            if ("998".equals(num_socio) || "995".equals(num_socio)) {
                 apto = false;
-                logger.warn("Socio con deudas pendientes - Número: {}", num_socio);
+                logger.warn("❌ Socio con deudas pendientes - Número: {}", num_socio);
             }
 
-            if ("995".equals(num_socio)) {
-                apto = false;
-                logger.warn("Socio con deudas pendientes - Número: {}", num_socio);
-            }
-
-            // ========= ERRORES TÉCNICOS SIMULADOS =========
+            // === ERRORES TÉCNICOS SIMULADOS ===
 
             if ("111".equals(num_socio)) {
-                throw new InterruptedException("La API se encuentra caída");
+                throw new InterruptedException("🚨 La API se encuentra caída");
             }
 
             if ("112".equals(num_socio)) {
-                throw new InterruptedException("Connection time out");
+                throw new InterruptedException("🚨 Connection time out");
             }
 
             if ("113".equals(num_socio)) {
-                throw new InterruptedException("Error DB");
+                throw new InterruptedException("🚨 Error en base de datos");
             }
 
-            // ========= COMPLETAR JOB CON VARIABLES =========
+            // === RESPUESTA ===
 
             Map<String, Object> variables = new HashMap<>();
             variables.put("apto", apto);
@@ -81,10 +70,10 @@ public class VerificarCoberturaHandler {
                     .send()
                     .join();
 
-            logger.info("Verificación completada. Socio {} - Apto: {}", num_socio, apto);
+            logger.info("✅ Verificación completada. Socio {} - Apto: {}", num_socio, apto);
 
         } catch (Exception e) {
-            logger.error("Error técnico al verificar cobertura del socio {}: {}", num_socio, e.getMessage(), e);
+            logger.error("💥 Error técnico al verificar cobertura del socio {}: {}", num_socio, e.getMessage(), e);
 
             client.newFailCommand(job.getKey())
                     .retries(job.getRetries() - 1)

@@ -1,40 +1,90 @@
 package com.obrasocial.solicitud_consulta_medica;
 
-import java.time.LocalDate;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
-import com.github.javafaker.Faker;
 
 public class FakeRandomizer {
 
-    final Faker faker = new Faker();
-    final Map<String, Object> inputVariables = new HashMap<>();
-    final String uniqueId = uuid();
+    private static final List<Map<String, Object>> testCases = List.of(
+        // Casos de prueba para la verificación de cobertura médica
+        // ✅ Caso exitoso: apto OK, turno disponible OK
+        Map.of(
+            "num_socio", "123456",
+            "especialidad", "Neurología",
+            "motivo", "Dolor",
+            "email", "1casoexitoso@correo.com",
+            "fechaTurno", "2025-06-01"
+        ),
+        
+        // ❌ Socio NO REGISTRADO num_socio = "999" --> (apto = false)
+        Map.of(
+            "num_socio", "999",
+            "especialidad", "Pediatria",
+            "motivo", "Dolor de cabeza",
+            "email", "2socionoregistrado@correo.com",
+            "fechaTurno", "2025-06-01"
+        ),
+        // ❌ Socio CON DEUDA num_socio = "998" --> (apto = false)
+        Map.of(
+            "num_socio", "998",
+            "especialidad", "Neurología",
+            "motivo", "Dolor",
+            "email", "3sociocondeuda@correo.com",
+            "fechaTurno", "2025-06-01"
+        ),
+        // ❌ Sin turno disponible (turnoDisponible = false)
+        Map.of(
+            "num_socio", "123456",
+            "especialidad", "Dermatología",
+            "motivo", "Lunares",
+            "email", "4sinturnopordermatologia@correo.com",
+            "fechaTurno", "2025-06-01"
+        ),
+        // ❌ Email inválido para notificar socio no apto (socio no apto, falla notificación)
+        Map.of(
+            "num_socio", "999",
+            "apto", false,
+            "especialidad", "Dermatología",
+            "motivo", "Lunares",
+            "email", "5emailinvilidosocionoapto.com", // EMAIL INVÁLIDO
+            "fechaTurno", "2025-06-01"
+        ),
 
-    public FakeRandomizer() {
-        inputVariables.put("num_socio", "1" + faker.number().digits(5)); // empieza con "1" para que sea apto
-        inputVariables.put("especialidad", randomEspecialidad());
-        inputVariables.put("motivo", faker.lorem().sentence());
-        inputVariables.put("apto", false);  // Podés simular con false si querés probar los rechazos
-        inputVariables.put("turnoDisponible", false);
-        inputVariables.put("fechaTurno", LocalDate.now().plusDays(5).toString());
-        inputVariables.put("email", faker.internet().emailAddress());
-    }
+        // ❌ Email inválido para notificar sin turno disponible (socio apto, NO turno disponible, falla notificación)
+        Map.of(
+            "num_socio", "34659",
+            "especialidad", "Dermatología",
+            "motivo", "Lunares",
+            "email", "6emailinvilidoturnonodisp.com", // inválido
+            "fechaTurno", "2025-06-01"
+        ),
+
+        // ❌ Turno duplicado (turno ya asignado)
+        Map.of(
+            "num_socio", "990",
+            "especialidad", "Neurología",
+            "motivo", "Dolor",
+            "email", "7errorporturnoduplicado@correo.com",
+            "fechaTurno", "2025-06-01"
+        ),
+
+        // ❌ Fecha de turno inválida
+        Map.of(
+            "num_socio", "889",
+            "especialidad", "Cardiología",
+            "motivo", "Taquicardia",
+            "email", "8errorporfechadeturnoinvalida@gmail.com"
+        )
+    
+
+    );
+
+    private static int currentIndex = 0;
 
     public Map<String, Object> getRandom() {
-        return inputVariables;
-    }
-
-    public static final String uuid() {
-        String result = java.util.UUID.randomUUID().toString();
-        return result.replaceAll("-", "").substring(0, 7);
-    }
-
-    private String randomEspecialidad() {
-        String[] especialidades = {
-            "Cardiología", "Pediatría", "Dermatología", "Neurología", "Traumatología"
-        };
-        return especialidades[faker.random().nextInt(especialidades.length)];
+        if (currentIndex >= testCases.size()) {
+            currentIndex = 0; // por si hay más instancias que casos
+        }
+        return testCases.get(currentIndex++);
     }
 }
